@@ -1,166 +1,133 @@
-﻿import java.time.LocalDateTime; 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+package addnumber;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * Tác giả: Nguyễn Huỳnh Bảo Hân <3 <3 <3
+ * Tác giả:  NguyenHuynhBaoHan.
  * DesCription.
- * Class MyBigNumber là lớp chứa 2 thuộc tính là 2 chuỗi đại diện cho 2 số.
- * Hàm sum là hàm để thực hiện phép cộng 2 chuỗi số
+ * Class MyBigNumber là lớp để Cộng 2 số lớn bằng 2 chuỗi.
+ * Hàm sum là hàm để thực hiện phép cộng 2 chuỗi số.
  */
-class MyBigNumber implements IStrCalculator {          
-    private  StringBuilder s1;                               
-    private  StringBuilder s2;
+
+public class MyBigNumber {
     
-    public MyBigNumber() {
-        s1 = new StringBuilder("0");
-        s2 = new StringBuilder("0");
+    private IReceiver ireceiver;
+
+    public MyBigNumber(final IReceiver ireceiver) {
+        this.ireceiver = ireceiver;
     }
-    
-    public  MyBigNumber(final String s1,final String s2) {
-        this.s1 = new StringBuilder(s1);
-        this.s2 = new StringBuilder(s2);
-    }
-    
-    /*
-     * Hàm sum trả về giá trị tổng 2 số tương ứng với 2 tham số dưới dạng chuỗi
-     * Xuất ra màn hình các bước tính tổng 
-     * @param s1 chuỗi số thứ 1 chỉ bao gồm các ký số từ '0' đến '9'
-     * @param s2 chuỗi số thứ 2 chỉ bao gồm các ký số từ '0' đến '9'
-     * @return chuỗi số thể hiện giá trị tổng của s1 và s2
+
+    /** 
+     * Để thực hiện phép cộng 2 số, ta cần truyền 2 tham số là 2 chuỗi vào hàm sum.
+     * Trong đó : 2 chuỗi chỉ được chứa các kí tự số từ '0' đến '9'.
+     * <br/>
+     * 
+     * @param s1 chuỗi số thứ nhất.
+     * @param s2 chuỗi số thứ hai.
+     * @return 
      */
-    @Override
-    public String sum(final String s1, final String s2) {       
-        
-        // kiểm tra tính hợp lệ: return exception nếu có tham số rỗng
-        
-        try {
-            
-            // kiểm tra tính hợp lệ của tham số s1
-            for (char c: s1.toCharArray()) {
-                if (c - '0' < 0 || c - '0' > 9) {
-                    throw new NumberFormatException();
-                }
-            }
-        
-            // kiểm tra tính hợp lệ của tham số s2
-            for (char c: s2.toCharArray()) {
-                if (c - '0' < 0 || c - '0' > 9) {
-                    throw new NumberFormatException();
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Ban nhap so sai roi");
-            return "";
-        }
-        
-        
-        // gán giá trị tham số vào 2 thuộc tính s1 s2
-        setS1(s1.equals("") ? "0" : s1);
-        setS2(s2.equals("") ? "0" : s2);
+    public String sum(final String s1, final String s2) {
+        //Lấy độ dài của 2 chuỗi 
+        //Khai báo 
 
-        // xóa các ký số '0' dư ở đầu chuỗi số s1
-        while (getS1().startsWith("0") && getS1().length() > 1) {
-            this.s1.deleteCharAt(0);
+        String finalResult = "";
+        String step = "";// Chuỗi step sẽ làm tham số cho hàm send của interface
+        String conver = "";        
+        Pattern p = Pattern.compile("\\D"); // Chuỗi đại diện cho kí tự số từ [0-9]
+        final Matcher m1 = p.matcher(s1);
+        final Matcher m2 = p.matcher(s2);
+        int errorPos; // Vị trí của lỗi
+        int length1 = s1.length();// Độ dài của chuỗi s1
+        int length2 = s2.length();// Độ dài của chuỗi s2
+        final int maxLen = (length1 > length2) ? length1 : length2; // Xác định độ dài lớn nhất của 2 chuỗi
+        int index1; // chỉ số của kí tự đang xét của chuỗi 1
+        int index2; // chỉ số của kí tự đang xét của chuỗi 2
+        char c1;    // kí tự tại vị trí index1 của chuỗi s1
+        char c2;    // kí tự tại vị trí index2 của chuỗi s2
+        int d1;   // kí số của c1
+        int d2;   // kí số của c2
+        int t;  // tổng tạm của d1 và d2;
+        int k;   // tổng tạm không có số nhớ
+        int remember = 0;    // nhớ nếu t lớn hơn hoặc bằng 10
+        int remember1 = 0; // biến tạm
+         
+        // Kiểm tra chuỗi null
+        if ((s1 == null) || (s2.trim().isEmpty())) {
+            s1 = "0";
         }
-        
-        // xóa các ký số '0' dư ở đầu chuỗi số s1
-        while (getS2().startsWith("0") && getS2().length() > 1) {
-            this.s2.deleteCharAt(0);
-        }
-        
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm"); // class định dạng DateTime   
-        ArrayList<String> strArr = new ArrayList<>(); // mỗi phần tử chứa chuỗi biểu diễn 1 bước tính tổng
-        String str; // tổng hợp chuỗi biểu diễn qua từng bước tính
-        String finalResult = ""; // chuỗi kết quả trả về của hàm
-        int len1 = getS1().length(); // độ dài của chuỗi s1
-        int len2 = getS2().length();  // độ dài của chuỗi s2
-        int maxlen = (len1 > len2) ? len1 : len2; // độ dài lớn nhất của 2 chuỗi
-        int remember = 0; // giá trị nhớ
-        int s; // tổng từng cặp kí số trong chuỗi
-        int index1; // vị trí kí tự trong chuỗi s1
-        int index2; // vị trí kí tự trong chuỗi s2
-        char value1; // kí số tại index1
-        char value2; // kí số tại index2
-        
-        strArr.add(getS1() + " + " + getS2() + " = ?");
-        for (int i = 0; i < maxlen; i++) {
-            index1 = len1 - i - 1; // index1 duyệt từ phải sang trái chuỗi s1
-            index2 = len2 - i - 1; // index2 duyệt từ phải sang trái chuỗi s2
-            str = "";
-            if (index1 >= 0) { // value1 lưu kí số tại index1, bằng '0' nếu index vượt ngoài hàng của số
-                value1 = getS1().charAt(index1); 
-            } else {
-                value1 = '0';
-            }
-            if (index2 >= 0) { // value2 lưu kí số tại index2, bằng '0' nếu index vượt ngoài hàng của số
-                value2 = getS2().charAt(index2);
-            } else {
-                value2 = '0';
-            }
-            s = value1 - '0' + value2 - '0' + remember; // tính tổng 2 giá trị số và biến nhớ
 
-            finalResult = (s % 10) + finalResult; // gộp phần Ghi của tổng s vào đầu chuỗi finalResult
-            str += "Buoc " + (i + 1) // gán giá trị diễn giải bước tính
-                    + ": Lay " + value1 + " + " + value2
-                    + ((remember > 0) ? " Them " + remember + " " : "\t ");
-                                                        
-            remember = s / 10; // gán giá trị Nhớ của tổng s vào biến nhớ;
-            
-            if (i == maxlen - 1) { // Phân biệt cách diễn giải của bước cuối cùng (không cần tách giá trị nhớ) 
-                finalResult = (remember > 0) ? remember + finalResult : finalResult;  
-                str += "Duoc " + s + ((s / 10 > 0) ? " " : "\t ") 
-                         + "Ghi " + s + "\t\t(" + dtf.format(LocalDateTime.now()) + ")";
-            } else {
-                str += "Duoc " + s + ((s / 10 > 0) ? " " : "\t ") 
-                    + "Ghi " + (s % 10) + "  Nho " + remember + "\t(" + dtf.format(LocalDateTime.now()) + ")";
-            }
-            
-            strArr.add(str); // thêm chuỗi diễn giải vào mảng
+        if ((s2 == null) || (s2.trim().isEmpty())) {
+            s2 = "0";
+        }
+        
+        // Kiểm tra số âm
+        if (s1.charAt(0) == '-') {
+            errorPos = 1;
+            this.ireceiver.send("Vui lòng không chứ số âm trong s1 : " + s1);
+            throw new ExNumberFormatException(errorPos);
         } 
-        show(strArr);
-        return finalResult;
-    }
-    
-    /*
-     * Hàm xuất các bước tính ra màn hình
-     * @param msg chứa các phần tử là chuỗi diễn giải mỗi bước tính
-     */
-    @Override
-    public void show(final ArrayList<String> msg) {
-        for (String x : msg) {
-            System.out.println(x);
+        
+        if (s2.charAt(0) == '-') {
+            errorPos = 1;
+            this.ireceiver.send("Vui lòng không chứ số âm trong s2 : " + s2);
+            throw new ExNumberFormatException(errorPos);
         }
-    }
-
-    /**
-     * return chuỗi s1.
-     */
-    public String getS1() {
         
-        return s1.toString();
-    }
-
-    /**
-     * gán chuỗi s1.
-     */
-    public void setS1(final String s1) {
-        this.s1 = new StringBuilder(s1);
-    }
-
-    /**
-     * return chuỗi s2.
-     */
-    public String getS2() {
+        // Kiểm tra kí tự đặc biệt hoặc chữ
+        if (m1.find()) {
+            errorPos = m1.start() + 1;
+            this.ireceiver.send("Vui lòng không chứ kí tự đặc biệt hoặc chữ trong s1 : " + s1);
+            throw new ExNumberFormatException(errorPos);   
+        }
         
-        return s2.toString();
-    }
+        if (m2.find()) {
+            errorPos = m2.start() + 1;
+            this.ireceiver.send("Vui lòng không chứ kí tự đặc biệt hoặc chữ trong s2 : " + s2);
+            throw new ExNumberFormatException(errorPos);
+        }
+        
+        //// Lặp maxLen lần
+        for (int i = 0; i < maxLen; i++) {
+            index1 = length1 - i - 1;//lấy ra vị trí index1 phía bên phải của chuỗi 1
+            index2 = length2 - i - 1;//lấy ra vị trí index2 phía bên phải của chuỗi 2
 
-    /**
-     * gán chuỗi s2.
-     * @param s2 chuỗi s2 cần gán.
-     */
-    public void setS2(final String s2) {
-        this.s2 = new StringBuilder(s2);
+            c1 = (index1 >= 0) ? s1.charAt(index1) : '0'; 
+            c2 = (index2 >= 0) ? s2.charAt(index2) : '0';
+
+            d1 = c1 - '0';//Số tại vị trí index1
+            d2 = c2 - '0';//Số tại vị trí index2
+
+            remember1 = remember;
+            t = d1 + d2 + remember;//Tổng tạm bằng số tại vị trí index1 + số tại vị trí index2 + số nhớ remember
+
+            // Lấy hàng đơn vị của t ghép vào phía trước kết quả
+            finalResult = (t % 10) + finalResult;
+            remember = t / 10; // số nhớ
+
+            if (i == 0) {
+                conver = "Bước " + i + " : lấy " + d1 + " cộng " + d2 + " được " + (d1 + d2)
+                    + " , " + " ghi " + (t % 10) + " , " + " nhớ " + remember + ", kết quả : " + finalResult + "\n";
+            } else if (i == (maxLen - 1) && t >= 10) {
+                conver = "Bước " + i + " : lấy " + d1 + " cộng " + d2 + " cộng " + remember1 
+                    + " được " + t + " , " + "ghi " + t + " , " + "nhớ " + remember 
+                    + ", kết quả : 1" + finalResult + "\n";
+            } else {
+                conver = "Bước " + i + " : lấy " + d1 + " cộng " + d2 + " cộng " + remember1 
+                    + " được " + t + " , " + "ghi " + (t % 10) + " , " + "nhớ " + remember
+                    + ", kết quả : " + finalResult + "\n";
+            }
+            step = step + conver;
+        }
+        
+        // Kết thúc vòng lặp, nếu biến nhớ remember có giá trị thì
+        // ghép thêm remember vào phía trước kết quả
+        if (remember > 0) {
+            finalResult = remember + finalResult;
+        }
+        step = "\n" + s1 + " + " + s2 + " = " + finalResult + "\n" + "Process implementation : \n" + step;
+        this.ireceiver.send(step);
+        
+        return finalResult;
     }
 }
