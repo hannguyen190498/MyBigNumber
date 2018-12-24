@@ -1,6 +1,6 @@
 # MyBigNumber
 phần mềm cộng 2 số chúng ta sẽ nhập 2 số dưới dạng chuỗi 
-tải file tại đây:
+tải file tại đây:https://drive.google.com/drive/u/4/my-drive?ogsrc=32
 HƯỚNG DẪN CÁCH SỬ DỤNG:
 *Cách sử dụng 1 : 
 B1: Mở chương trình bạn vừa tải về và mở cmd , cd vào thư mục đó.
