@@ -30,13 +30,12 @@ public class MyBigNumber {
     public String sum(final String s1, final String s2) {
         //Lấy độ dài của 2 chuỗi 
         //Khai báo 
+        String str1 = s1; //chuỗi chứa giá trị s1
+        String str2 = s2; //chuỗi chứa giá trị s2
 
         String finalResult = "";
         String step = "";// Chuỗi step sẽ làm tham số cho hàm send của interface
         String conver = "";        
-        Pattern p = Pattern.compile("\\D"); // Chuỗi đại diện cho kí tự số từ [0-9]
-        final Matcher m1 = p.matcher(s1);
-        final Matcher m2 = p.matcher(s2);
         int errorPos; // Vị trí của lỗi
         int length1 = s1.length();// Độ dài của chuỗi s1
         int length2 = s2.length();// Độ dài của chuỗi s2
@@ -51,6 +50,9 @@ public class MyBigNumber {
         int k;   // tổng tạm không có số nhớ
         int remember = 0;    // nhớ nếu t lớn hơn hoặc bằng 10
         int remember1 = 0; // biến tạm
+
+        char n1; // chứa kí tự trong s1
+        char n2; // chứa kí tự trong s2
          
         // Kiểm tra chuỗi null
         if ((s1 == null) || (s2.trim().isEmpty())) {
@@ -74,21 +76,25 @@ public class MyBigNumber {
             throw new ExNumberFormatException(errorPos);
         }
         
-        // Kiểm tra kí tự đặc biệt hoặc chữ
-        if (m1.find()) {
-            errorPos = m1.start() + 1;
-            this.ireceiver.send("Vui lòng không chứ kí tự đặc biệt hoặc chữ trong s1 : " + s1);
-            throw new ExNumberFormatException(errorPos);   
-        }
-        
-        if (m2.find()) {
-            errorPos = m2.start() + 1;
-            this.ireceiver.send("Vui lòng không chứ kí tự đặc biệt hoặc chữ trong s2 : " + s2);
-            throw new ExNumberFormatException(errorPos);
-        }
-        
         //// Lặp maxLen lần
         for (int i = 0; i < maxLen; i++) {
+
+            // Kiểm tra kí tự đặc biệt hoặc chữ
+            n1 = (index1 >= 0) ? s1.charAt(i) : '0'; 
+            n2 = (index2 >= 0) ? s2.charAt(i) : '0'; 
+
+            if (!(n1 >= '0' && n1 <= '9')) {
+                errorPos = s1.charAt(n1);
+                this.ireceiver.send("Vui lòng không chứ kí tự đặc biệt hoặc chữ trong s1 : " + s1);
+                throw new ExNumberFormatException(errorPos);
+            }
+
+            if (!(n2 >= '0' && n2 <= '9')) {
+                errorPos = s1.charAt(n2);
+                this.ireceiver.send("Vui lòng không chứ kí tự đặc biệt hoặc chữ trong s1 : " + s2);
+                throw new ExNumberFormatException(errorPos);
+            }
+
             index1 = length1 - i - 1;//lấy ra vị trí index1 phía bên phải của chuỗi 1
             index2 = length2 - i - 1;//lấy ra vị trí index2 phía bên phải của chuỗi 2
 
