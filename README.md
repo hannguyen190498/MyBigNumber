@@ -25,3 +25,4 @@ java MyBigNumberTest
 2 chuỗi số nhập vào không được chứa số âm. Ví dụ: s1 = -9 và s2 = 56
 
 2 chuỗi nhập vào không được chứa kí tự đặc biệt. ví dụ: s1 = %2avà s2 = 89.
+slosdfdof odofdsfod ofdodfdfds 
